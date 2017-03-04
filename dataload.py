@@ -3,6 +3,7 @@ import csv
 import pandas
 from pandas.tools.plotting import scatter_matrix
 import matplotlib.pyplot as plt 
+#from sklearn import datasets
 from sklearn import model_selection
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
@@ -37,6 +38,7 @@ print(dataset.describe())
 dataset.hist()
 plt.show()
 '''
+
 
 #multivariate plot to understand relationship between attributes
 scatter_matrix(dataset)
