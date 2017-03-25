@@ -87,7 +87,7 @@ def simple_linear_regression(train, test):
 		predictions.append(yhat)
 	return predictions
 
-#Simple linear regression on insurance dataset
+#Simple linear regression on dataset Cricket chirps vs Temp
 seed(1)
 
 #Load and prepare data
