@@ -1,22 +1,102 @@
-#import libraries
-from datetime import datetime
-import pandas as p 
-from sklearn.linear_model import LinearRegression
+#Simple Linear Regression
+from random import seed
+from random import randrange
+from csv import reader
+from math import sqrt
 
-#time
-start = datetime.now()
+#Load a CSV file
+def load_csv(filename):
+	dataset = list()
+	with open(filename, 'r') as file:
+		csv_reader = reader(file)
+		for row in csv_reader:
+			if not row:
+				continue
+			dataset.append(row)
+	return dataset
 
-x = p.read_csv("default of credit card clients.csv", usecols=[0], skiprows=2)
-y = p.read_csv("default of credit card clients.csv", usecols=[1], skiprows=2)
-model = LinearRegression()
-model.fit(x, y)
+#Convert string column to float
+def str_column_to_float(dataset, column):
+	for row in dataset:
+		row[column] = float(row[column].strip())
 
-#predict
-x_p = [62541]
-y_p = model.predict(x_p)
+#Split a dataset into a train and test set
+def train_test_split(dataset, split):
+	train = list()
+	train_size = split * len(dataset)
+	dataset_copy = list(dataset)
+	while len(train) < train_size:
+		index = randrange(len(dataset_copy))
+		train.append(dataset_copy.pop(index))
+	return train, dataset_copy
 
-print(y_p)
+#Calculate root mean squared error
+def rmse_metric(actual, predicted):
+	sum_error = 0.0
+	for i in range(len(actual)):
+		prediction_error = predicted[i] - actual[i]
+		sum_error += (prediction_error ** 2)
+	mean_error = sum_error / float(len(actual))
+	return sqrt(mean_error)
 
-#time
-end = datetime.now()
-print("Duration: {}".format(end - start)) #running time
+#Evaluate an algorithm using a train/test split
+def evaluate_algorithm(dataset, algorithm, split, *args):
+	train, test = train_test_split(dataset, split)
+	test_set = list()
+	for row in test:
+		row_copy = list(row)
+		row_copy[-1] = None
+		test_set.append(row_copy)
+	predicted = algorithm(train, test_set, *args)
+	actual = [row[-1] for row in test]
+	rmse = rmse_metric(actual, predicted)
+	return rmse
+
+#Calculate the mean value of a list of numbers : mean(x)
+def mean(values):
+	return sum(values)/float(len(values))
+
+#Calculate covariance between x and y : cov(x,y)
+def covariance(x, mean_x, y, mean_y):
+	covar = 0.0 #float
+	for i in range(len(x)):
+		covar += (x[i] - mean_x) * (y[i] - mean_y)
+	print('Covariance: %.3f' % (covar)) #trial print
+	return covar
+
+#Calculate the variance of a list of numbers : var(x)
+def variance(values, mean):
+	return sum([(x-mean)**2 for x in values])
+
+#Calculate coefficients
+def coefficients(dataset):
+	x = [row[0] for row in dataset]
+	y = [row[1] for row in dataset]
+	x_mean, y_mean = mean(x), mean(y) #mean(x) and mean(y) of existing dataset
+	b1 = covariance(x, x_mean, y, y_mean) / variance(x, x_mean) #b1
+	b0 = y_mean - b1 * x_mean #b0
+	print('Coefficients: B0=%.3f, B1=%.3f' % (b0, b1)) #trial print
+	return [b0, b1]
+
+#Simple linear regression algorithm
+def simple_linear_regression(train, test):
+	predictions = list()
+	b0, b1 = coefficients(train)
+	for row in test:
+		yhat = b0 + b1 * row[0] #y = b0 + b1*x
+		predictions.append(yhat)
+	return predictions
+
+#Simple linear regression on insurance dataset
+seed(1)
+
+#Load and prepare data
+filename = 'test.csv'
+dataset = load_csv(filename)
+for i in range(len(dataset[0])):
+	str_column_to_float(dataset, i)
+
+#Evaluate algorithm using root mean squared error (RMSE)
+split = 0.6
+rmse = evaluate_algorithm(dataset, simple_linear_regression, split)
+print('RMSE: %.3f' % (rmse))
