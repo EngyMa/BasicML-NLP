@@ -1,4 +1,4 @@
-# Basic ML
+# Basic ML and NLP
 
 * Common machine learning algorithms' implementation
 * Algorithms implemented with or without in-built libraries (as mentioned)
