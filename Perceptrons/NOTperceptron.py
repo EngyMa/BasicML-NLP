@@ -2,13 +2,11 @@
 
 import pandas as pd
 
-# TODO: Set weight1, weight2, and bias
+# Set weight1, weight2, and bias
 weight1 = 0.0
 weight2 = -2.0
 bias = 1.0
 
-
-# DON'T CHANGE ANYTHING BELOW
 # Inputs and outputs
 test_inputs = [(0, 0), (0, 1), (1, 0), (1, 1)]
 correct_outputs = [True, False, True, False]
